@@ -1,0 +1,7 @@
+{
+	"actorSpecification": 1,
+	"name": "jiomart-scrapper",
+	"version": "1.0",
+	"buildTag": "latest",
+	"environmentVariables": {}
+}
