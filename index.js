@@ -9,6 +9,7 @@ const input = await Actor.getInput() ?? {};
 const {
     pincode = '120001', // Default to Mumbai
     searchQueries = ['kurkure'],
+    searchUrls = [],
     maxProductsPerSearch = 100,
     maxRequestRetries = 3,
     navigationTimeout = 60000,
@@ -327,15 +328,28 @@ const crawler = new PlaywrightCrawler({
 
 // ==================== EXECUTION ====================
 
-const startUrls = searchQueries.map(query => ({
-    url: `https://www.jiomart.com/search?q=${encodeURIComponent(query)}`,
-    userData: { 
-        query,
-        pincode,
-        isFirst: true // Mark as first to trigger location set
-    }
-}));
+const startUrls = [
+    ...searchQueries.map(query => ({
+        url: `https://www.jiomart.com/search?q=${encodeURIComponent(query)}`,
+        userData: { 
+            query,
+            pincode,
+            isFirst: true // Mark as first to trigger location set
+        }
+    })),
+    ...searchUrls.map(url => ({
+        url,
+        userData: {
+            query: 'direct_url',
+            pincode,
+            isFirst: true
+        }
+    }))
+];
 
 log.info(`Starting crawler for ${startUrls.length} queries...`);
 await crawler.run(startUrls);
 log.info('Crawler finished.');
+
+// Exit Actor
+await Actor.exit();
